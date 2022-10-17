@@ -1,0 +1,43 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>FullstackDotnet</PageTitle>
+
+<h1>Coding Task Full Stack</h1>
+
+<StatusDisplay StatusComponent="statusComponent"/>
+
+<UserInputComponent hasWaited="hasWaited"/>
+
+<ServerMessageReceiver StatusComponent="statusComponent" />
+
+@code {
+    private bool hasWaited = false;
+
+    private Delay initialDelay = new Delay(TimeSpan.FromSeconds(5));
+
+    private StatusComponent statusComponent = new StatusComponent();
+
+    private async Task<bool> CheckBackendStatus()
+    {
+        var statusBackend = await Http.GetAsync("/api/Status");
+
+        return statusBackend.IsSuccessStatusCode;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        hasWaited = await initialDelay.WaitOnce(default);
+
+        var backendOk = await CheckBackendStatus();
+
+        if (!backendOk)
+        {
+            throw new InvalidOperationException("Backend offline?!");
+        }
+
+        statusComponent.Progress();
+
+        StateHasChanged();
+    }
+}

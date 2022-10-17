@@ -1,0 +1,33 @@
+﻿@if (Status == StatusEnum.Idle)
+{
+    <p id="status" class="bg-dark text-white rounde"><i class="bi bi-brightness-alt-high-fill" style="color: yellow;font-size: 32px"></i> @StatusComponent.GetStatus()</p>
+}
+else if (Status == StatusEnum.Online)
+{
+    <p id="status" class="bg-dark text-white rounde"><i class="bi bi-brightness-high-fill" style="color: green;font-size: 32px"></i> @StatusComponent.GetStatus()</p>
+}
+else
+{
+    <p id="status" class="bg-dark text-white rounde"><i class="bi bi-brightness-alt-low-fill" style="color: blue;font-size: 32px"></i> @StatusComponent.GetStatus()</p>
+}
+
+@code {
+    [Parameter]
+    public StatusComponent StatusComponent { get; set; } = new();
+
+    private StatusEnum Status = StatusEnum.Idle;
+
+    private PeriodicTimer periodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(0.1));
+
+    protected override async Task OnInitializedAsync()
+    {
+        while(await periodicTimer.WaitForNextTickAsync())
+        {
+            if (Status != StatusComponent.GetStatusEnum())
+            {
+                Status = StatusComponent.GetStatusEnum();
+                StateHasChanged();
+            }
+        }
+    }
+}

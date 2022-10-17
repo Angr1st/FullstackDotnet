@@ -1,0 +1,52 @@
+﻿@using System.Runtime.CompilerServices
+@using Frontend.Services
+@inject MessageService messageService
+
+@if (!hasWaited)
+{
+
+}
+else
+{
+    <p>
+        <label>
+            User Input
+            <input type="text" @bind="userInput" @bind:event="oninput" @onkeyup="SendToBackend" />
+        </label>
+    </p>
+}
+
+@code {
+    [Parameter]
+    public bool hasWaited { get; set; } = false;
+
+    private string userInput = string.Empty;
+
+    private PeriodicTimer periodicTimerUserInput = new PeriodicTimer(TimeSpan.FromSeconds(0.5));
+
+    private bool HasInputChanged = false;
+
+    private async ValueTask SendMessages(CancellationToken cancellationToken)
+    {
+        try
+        {
+            while (await periodicTimerUserInput.WaitForNextTickAsync(cancellationToken) && !cancellationToken.IsCancellationRequested)
+            {
+                if (HasInputChanged)
+                {
+                    HasInputChanged = false;
+                    await messageService.SendMessage(new MessageRecord(userInput));
+                }
+            }
+        }
+        catch (Exception)
+        {
+            //Connection Error
+        }
+        await ValueTask.CompletedTask;
+    }
+
+    private void SendToBackend() => HasInputChanged = true;
+
+    protected override async Task OnInitializedAsync() => await SendMessages(default);
+}

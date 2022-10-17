@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore.Server" Version="2.49.0" />
+    <PackageReference Include="Grpc.AspNetCore.Web" Version="2.49.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="7.0.0-rc.1.22427.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="protobuf-net.Grpc" Version="1.0.177" />
+    <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.177" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ArgumentParsing\ArgumentParsing.fsproj" />
+    <ProjectReference Include="..\Frontend\Frontend.csproj" />
+    <ProjectReference Include="..\Shared\Lib.Shared.csproj" />
+  </ItemGroup>
+
+
+</Project>

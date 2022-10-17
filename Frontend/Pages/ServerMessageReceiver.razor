@@ -1,0 +1,51 @@
+﻿@using Frontend.Services
+@inject MessageService messageService
+
+@if (serverOutput.Count == 0)
+{
+    <p><em>Waiting for Server Messages...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Server Output:</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var serverMessage in serverOutput)
+            {
+                <tr>
+                    <td>@serverMessage.Message</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public StatusComponent StatusComponent { get; set; } = new();
+
+    private List<MessageRecord> serverOutput = new();
+
+    private async Task ReceivedFromServer()
+    {
+        try
+        {
+            await foreach (var serverMessage in messageService.GetMessages())
+            {
+                serverOutput.Add(serverMessage);
+                StateHasChanged();
+            }
+        }
+        catch (Exception)
+        {
+            //This usually means that the Backend has terminated.
+            StatusComponent.Progress();
+        }
+    }
+
+    protected override async Task OnInitializedAsync() => await ReceivedFromServer();
+}
